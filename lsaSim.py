@@ -1,9 +1,9 @@
 from gensim import corpora, models, similarities
 import pandas as pd
 
-dictionary = corpora.Dictionary.load("../lsaModels/dictionary_fabric")
-lsi = models.LsiModel.load("../lsaModels/lsi_300_fabric")
-paths = pd.read_csv("../topicWords/fabric_paths.csv")
+dictionary = corpora.Dictionary.load("data/dictionary_fabric")
+lsi = models.LsiModel.load("data/lsi_300_fabric")
+paths = pd.read_csv("data/fabric_paths.csv")
 
 def rank_paths(ideaBag):
     """Given a set of ideas, return a ranking of solution paths
