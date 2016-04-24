@@ -65,7 +65,8 @@ def rank_paths(ideaBag, kTest):
     for docSim in sims:
         app.logger.info(paths.loc[docSim[0], 'path'])
         kBase = paths.loc[docSim[0], 'knowledgeBase'] 
-        # app.logger.info(kBase)
+        app.logger.info(kTest)
+        app.logger.info(kBase)
         # app.logger.info(type(kTest[kBase]))
         kBaseRank = int(kTest[kBase]) + docSim[1] # combine the knowledge test score and similarity score
         paths.set_value(docSim[0], 'rank', kBaseRank) 
