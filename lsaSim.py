@@ -5,9 +5,10 @@ dictionary = corpora.Dictionary.load("data/dictionary_fabric")
 lsi = models.LsiModel.load("data/lsi_300_fabric")
 paths = pd.read_csv("data/fabric_paths.csv")
 
-def rank_paths(ideaBag):
+def rank_paths(ideaBag, kTest):
     """Given a set of ideas, return a ranking of solution paths
-    in terms of similarity to the set of ideas.
+    that is jointly determined by knowledge test scores
+    and similarity to the set of ideas.
     """
 
     # create similarity index from paths
@@ -24,12 +25,19 @@ def rank_paths(ideaBag):
     sims = sorted(enumerate(sims), key=lambda item: -item[1])
 
     # map similarities to path data
-    paths['rank'] = 0
-    paths['sim'] = 0.0
-    for rank, docSim in enumerate(sims):
-        paths.set_value(docSim[0], 'rank', rank)
-        paths.set_value(docSim[0], 'sim', docSim[1])
+    paths['rank'] = 0.0
+    for docSim in sims:
+        kBase = paths.loc[docSim[0], 'knowledgeBase'] 
+        kBaseRank = kTest[kBase] # first get the knowledge test ranking
+        paths.set_value(docSim[0], 'sim', docSim[1]) # store the similarity to ideas
+        paths.set_value(docSim[0], 'rank', kBaseRank + docSim[1]) # now combine the knowledge test score and similarity score
 
-    paths.sort_values("rank", inplace=True)
+    # paths['rank'] = 0
+    # paths['sim'] = 0.0
+    # for rank, docSim in enumerate(sims):
+        # paths.set_value(docSim[0], 'rank', rank)
+        # paths.set_value(docSim[0], 'sim', docSim[1])
 
-    return paths[['id', 'path', 'rank', 'sim']].to_json(orient="records")
+    paths.sort_values("rank", inplace=True, ascending=False)
+
+    return paths[['id', 'path', 'rank', 'sim', 'knowledgeBase']]
